@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Incorrect id</title>
+</head>
+<body>
+<div th:text="${'Book with ID ' + id + ' does not exist!'}"></div>
+<br>
+<form th:method="GET" th:action="@{/books}">
+    <input type="submit" value="All books"/>
+</form>
+</body>
+</html>

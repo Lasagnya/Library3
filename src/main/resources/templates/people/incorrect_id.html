@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Incorrect id</title>
+</head>
+<body>
+  <div th:text="${'Person with ID ' + id + ' does not exist!'}"></div>
+  <br>
+  <form th:method="GET" th:action="@{/people}">
+      <input type="submit" value="All people"/>
+  </form>
+</body>
+</html>
