@@ -33,16 +33,6 @@
   </form>
 </div>
 
-<!--<div>-->
-<!--  <form th:method="POST" th:action="@{/books/{id}/test(id=${book.getId()})}" th:object="${bookingExpiryDate}">-->
-<!--    <div>-->
-<!--      <label for="testDate">Booking expiry date</label>-->
-<!--      <input type="date" id="testDate" th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:field="*{date}"/>-->
-<!--    </div>-->
-<!--    <input type="submit" value="Make test"/>-->
-<!--  </form>-->
-<!--</div>-->
-
 <hr/>
 
 <form th:method="GET" th:action="@{/books/{id}/edit(id=${book.getId()})}">

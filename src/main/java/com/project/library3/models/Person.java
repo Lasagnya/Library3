@@ -24,6 +24,9 @@ public class Person {
 	@Column(name = "birth")
 	private int birth;
 
+	@Column(name = "fine")
+	private double fine;
+
 	@OneToMany(mappedBy = "owner")
 	private List<Book> books;
 
@@ -52,6 +55,14 @@ public class Person {
 
 	public void setBirth(int age) {
 		this.birth = age;
+	}
+
+	public double getFine() {
+		return fine;
+	}
+
+	public void setFine(double fine) {
+		this.fine = fine;
 	}
 
 	public List<Book> getBooks() {

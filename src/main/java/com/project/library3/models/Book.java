@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.logging.Logger;
 
 @Entity
 @Table(name = "book")
@@ -94,8 +95,7 @@ public class Book {
 	}
 
 	public boolean isExpired() {
-		long diff = Math.abs(ChronoUnit.DAYS.between(new Date().toInstant(), getTakingDate()));
-		return diff > 10;
+		return expiryDate.isBefore(LocalDate.now());
 	}
 
 	public LocalDate getExpiryDate() {
