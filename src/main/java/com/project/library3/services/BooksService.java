@@ -9,7 +9,7 @@ import com.project.library3.models.Book;
 import com.project.library3.models.Person;
 import com.project.library3.repositories.BooksRepository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,17 +66,19 @@ public class BooksService {
 		return booksRepository.findById(id).map(Book::getOwner).orElse(null);
 	}
 
-	public void assign(int id, Person assignedPerson) {
+	public void assign(int id, Book assignedBook) {
 		booksRepository.findById(id).ifPresent(book -> {
-			book.setOwner(assignedPerson);
-			book.setTakingTime(new Date());
+			book.setOwner(assignedBook.getOwner());
+			book.setTakingDate(LocalDate.now());
+			book.setExpiryDate(assignedBook.getExpiryDate());
 		});
 	}
 
 	public void deleteAssign(int id) {
 		booksRepository.findById(id).ifPresent(book -> {
 			book.setOwner(null);
-			book.setTakingTime(null);
+			book.setTakingDate(null);
+			book.setExpiryDate(null);
 		});
 	}
 }

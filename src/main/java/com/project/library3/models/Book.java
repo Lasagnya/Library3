@@ -3,7 +3,9 @@ package com.project.library3.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
@@ -31,9 +33,14 @@ public class Book {
 	@Column(name = "year")
 	private int year;
 
-	@Column(name = "taking_time")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date takingTime;
+	@Column(name = "taking_date")
+	@Temporal(TemporalType.DATE)
+	private LocalDate takingDate;
+
+	@Column(name = "expiry_date")
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate expiryDate;
 
 	public Book() {
 	}
@@ -78,16 +85,24 @@ public class Book {
 		this.owner = owner;
 	}
 
-	public Date getTakingTime() {
-		return takingTime;
+	public LocalDate getTakingDate() {
+		return takingDate;
 	}
 
-	public void setTakingTime(Date takingTime) {
-		this.takingTime = takingTime;
+	public void setTakingDate(LocalDate takingDate) {
+		this.takingDate = takingDate;
 	}
 
 	public boolean isExpired() {
-		long diff = Math.abs(ChronoUnit.DAYS.between(new Date().toInstant(), getTakingTime().toInstant()));
+		long diff = Math.abs(ChronoUnit.DAYS.between(new Date().toInstant(), getTakingDate()));
 		return diff > 10;
+	}
+
+	public LocalDate getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(LocalDate expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 }

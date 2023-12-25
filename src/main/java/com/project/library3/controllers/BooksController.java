@@ -7,9 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.project.library3.models.Book;
-import com.project.library3.models.Person;
 import com.project.library3.services.BooksService;
 import com.project.library3.services.PeopleService;
+
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/books")
@@ -35,12 +36,11 @@ public class BooksController {
 	}
 
 	@GetMapping("/{id}")
-	public String show(Model model, @PathVariable("id") int id, @ModelAttribute("assignedPerson") Person person) {
+	public String show(Model model, @PathVariable("id") int id) {
 		if (booksService.findOne(id).isPresent()) {
 			model.addAttribute("book", booksService.findOne(id).get());
-			if (booksService.showAssignedPerson(id) != null)
-				model.addAttribute("assignedPerson", booksService.showAssignedPerson(id));
-			else model.addAttribute("people", peopleService.findAll());
+			if (booksService.showAssignedPerson(id) == null)
+				model.addAttribute("people", peopleService.findAll());
 			return "books/show";
 		}
 		else model.addAttribute("id", id);
@@ -82,8 +82,9 @@ public class BooksController {
 	}
 
 	@PatchMapping("/{id}/assign")
-	public String assign(@PathVariable("id") int id, @ModelAttribute("assignedPerson") Person person) {
-		booksService.assign(id, person);
+	public String assign(@PathVariable("id") int id, @ModelAttribute("book") Book book) {
+		Logger.getGlobal().info(book.getExpiryDate().toString());
+		booksService.assign(id, book);
 		return String.format("redirect:/books/%d", id);
 	}
 

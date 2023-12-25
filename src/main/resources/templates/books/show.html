@@ -9,23 +9,39 @@
 <div th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"></div>
 <br>
 
-<div th:if="${book.owner == null}">
-  <div><b>This book is free.</b></div>
-  <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
-    <label for="person-select">Choose a person to assign:</label>
-    <select id="person-select" th:object="${assignedPerson}" th:field="*{id}">
-      <option th:each="person : ${people}" th:value="${person.getId()}" th:text="${person.getName()}"></option>
-    </select>
-    <input type="submit" value="Assign a book"/>
-  </form>
-</div>
-
-<div th:if="${book.owner != null}">
-  <div th:text="${'Now the book is at ' + assignedPerson.getName() + '.'}"></div>
+<div th:if="${book.getOwner() != null}">
+  <div th:text="${'Now the book is at ' + book.getOwner().getName() + '.'}"></div>
   <form th:method="PATCH" th:action="@{/books/{id}/delete_assign(id=${book.getId()})}">
     <input type="submit" value="Delete assign"/>
   </form>
 </div>
+
+<div th:if="${book.getOwner() == null}">
+  <div><b>This book is free.</b></div>
+  <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}" th:object="${book}">
+    <div>
+      <label for="person-select">Choose a person to assign:</label>
+      <select id="person-select" th:field="*{owner.id}">
+        <option th:each="person : ${people}" th:value="${person.id}" th:text="${person.getName()}"></option>
+      </select>
+    </div>
+    <div>
+      <label for="date">Booking expiry date</label>
+      <input type="date" id="date" th:field="*{expiryDate}" th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
+    </div>
+    <input type="submit" value="Assign a book"/>
+  </form>
+</div>
+
+<!--<div>-->
+<!--  <form th:method="POST" th:action="@{/books/{id}/test(id=${book.getId()})}" th:object="${bookingExpiryDate}">-->
+<!--    <div>-->
+<!--      <label for="testDate">Booking expiry date</label>-->
+<!--      <input type="date" id="testDate" th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:field="*{date}"/>-->
+<!--    </div>-->
+<!--    <input type="submit" value="Make test"/>-->
+<!--  </form>-->
+<!--</div>-->
 
 <hr/>
 
