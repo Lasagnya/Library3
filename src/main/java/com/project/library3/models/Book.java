@@ -36,6 +36,7 @@ public class Book {
 
 	@Column(name = "taking_date")
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate takingDate;
 
 	@Column(name = "expiry_date")

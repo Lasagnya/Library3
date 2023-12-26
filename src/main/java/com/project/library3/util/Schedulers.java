@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -23,14 +24,15 @@ public class Schedulers {
 		this.environment = environment;
 	}
 
-	@Scheduled(fixedRate = 86_400_000)
+	@Scheduled(fixedRate = 86_400_000)	// one day
+//	@Scheduled(fixedRate = 1000)	// for test
 	@Async
 	@Transactional
 	public void imposeFine() {
 		List<Person> people = peopleService.findAll();
 		for (Person person : people) {
-			long amount = person.getBooks().stream().filter(Book::isExpired).count();
-			person.setFine(Double.parseDouble(Objects.requireNonNull(environment.getProperty("booking.fine"))) * amount);
+			long amount = person.getBooks().stream().filter(book -> book.getExpiryDate().isEqual(LocalDate.now().minusDays(1))).count();
+			person.setFine(person.getFine() + Double.parseDouble(Objects.requireNonNull(environment.getProperty("booking.fine"))) * amount);
 		}
 	}
 }
