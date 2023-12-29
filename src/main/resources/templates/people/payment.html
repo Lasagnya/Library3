@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+</head>
+<body>
+
+<div th:unless="${person.getFine()>0.0}">
+    <div><b>The user has not fines!</b></div>
+    <form th:method="GET" th:action="@{/people/{id}(id=${person.getId()})}">
+        <input type="submit" value="Back to the person"/>
+    </form>
+</div>
+
+<div th:if="${person.getFine()>0.0}">
+    <br/>
+    <div><b>The user has fines!</b></div>
+    <div>Bank account details: 12345678</div>
+    <div th:text="${'Payment amount: ' + person.getFine()}"></div>
+    <form th:method="POST" th:action="@{/people}" th:object="${person}">
+        <label for="name">Input your bank account:</label>
+        <input type="text" th:field="*{name}" id="name"/>
+        <input type="submit" value="Create">
+    </form>
+</div>
+</body>
+</html>

@@ -82,4 +82,16 @@ public class PeopleController {
 		peopleService.delete(id);
 		return "redirect:/people";
 	}
+
+	@GetMapping("/{id}/pay")
+	public String pay(Model model, @PathVariable("id") int id) {
+		if (peopleService.findOne(id).isPresent()) {
+			model.addAttribute("person", peopleService.findOne(id).get());
+			return "people/payment";
+		}
+		else {
+			model.addAttribute("id", id);
+			return "people/incorrect_id";
+		}
+	}
 }
