@@ -28,7 +28,7 @@
       <div>Bank account details: 12345678</div>
       <div th:text="${'Payment amount: ' + person.getFine()}"></div>
 
-      <form th:method="POST" th:action="@{/people/{id}/pay(id=${person.getId()})}">
+      <form th:method="GET" th:action="@{/people/{id}/pay(id=${person.getId()})}">
           <input type="submit" value="Pay the fine"/>
       </form>
   </div>

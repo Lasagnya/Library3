@@ -1,7 +1,11 @@
 package com.project.library3.controllers;
 
+import com.project.library3.models.Currency;
+import com.project.library3.models.Transaction;
 import jakarta.validation.Valid;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import com.project.library3.models.Person;
 import com.project.library3.services.PeopleService;
 import com.project.library3.util.PersonValidator;
+import org.springframework.web.client.RestClient;
+
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/people")
@@ -87,7 +94,28 @@ public class PeopleController {
 	public String pay(Model model, @PathVariable("id") int id) {
 		if (peopleService.findOne(id).isPresent()) {
 			model.addAttribute("person", peopleService.findOne(id).get());
+			Transaction transaction = new Transaction();
+			model.addAttribute("transaction", transaction);
 			return "people/payment";
+		}
+		else {
+			model.addAttribute("id", id);
+			return "people/incorrect_id";
+		}
+	}
+
+	@PostMapping("/{id}/transaction")
+	public String sendTransaction(Model model, @ModelAttribute("transaction") Transaction transaction, @PathVariable int id) {
+		if (peopleService.findOne(id).isPresent()) {
+			transaction.setReceivingAccount(12345678);
+			transaction.setReceivingBank(1);
+			transaction.setAmount(peopleService.findOne(id).get().getFine());
+			transaction.setCurrency(Currency.BYN);
+			Logger.getGlobal().info(transaction.toString());
+			RestClient restClient = RestClient.create("http://localhost:7070/api/transaction/pay");
+			String result = restClient.post().contentType(MediaType.APPLICATION_JSON).body(transaction).retrieve().body(String.class);
+			Logger.getGlobal().info(result);
+			return "people/payment_successful";
 		}
 		else {
 			model.addAttribute("id", id);

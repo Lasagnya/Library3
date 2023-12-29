@@ -14,14 +14,13 @@
 </div>
 
 <div th:if="${person.getFine()>0.0}">
-    <br/>
     <div><b>The user has fines!</b></div>
     <div>Bank account details: 12345678</div>
     <div th:text="${'Payment amount: ' + person.getFine()}"></div>
-    <form th:method="POST" th:action="@{/people}" th:object="${person}">
-        <label for="name">Input your bank account:</label>
-        <input type="text" th:field="*{name}" id="name"/>
-        <input type="submit" value="Create">
+    <form th:method="POST" th:action="@{/people/{id}/transaction(id=${person.getId()})}" th:object="${transaction}">
+        <label for="account">Input your bank account:</label>
+        <input id="account" type="text" th:field="*{sendingAccount}"/>
+        <input type="submit" value="Pay">
     </form>
 </div>
 </body>
