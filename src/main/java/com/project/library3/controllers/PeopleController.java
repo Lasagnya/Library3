@@ -93,9 +93,9 @@ public class PeopleController {
 	@GetMapping("/{id}/pay")
 	public String pay(Model model, @PathVariable("id") int id) {
 		if (peopleService.findOne(id).isPresent()) {
-			model.addAttribute("person", peopleService.findOne(id).get());
-			Transaction transaction = new Transaction();
-			model.addAttribute("transaction", transaction);
+			Person person = peopleService.findOne(id).get();
+			model.addAttribute("person", person);
+			model.addAttribute("transaction", new Transaction(person));
 			return "people/payment";
 		}
 		else {
@@ -104,22 +104,23 @@ public class PeopleController {
 		}
 	}
 
-	@PostMapping("/{id}/transaction")
-	public String sendTransaction(Model model, @ModelAttribute("transaction") Transaction transaction, @PathVariable int id) {
-		if (peopleService.findOne(id).isPresent()) {
-			transaction.setReceivingAccount(12345678);
-			transaction.setReceivingBank(1);
-			transaction.setAmount(peopleService.findOne(id).get().getFine());
-			transaction.setCurrency(Currency.BYN);
-			Logger.getGlobal().info(transaction.toString());
-			RestClient restClient = RestClient.create("http://localhost:7070/api/transaction/pay");
-			String result = restClient.post().contentType(MediaType.APPLICATION_JSON).body(transaction).retrieve().body(String.class);
-			Logger.getGlobal().info(result);
-			return "people/payment_successful";
-		}
-		else {
-			model.addAttribute("id", id);
-			return "people/incorrect_id";
-		}
-	}
+//	@PostMapping(value = "/{id}/transaction", produces = MediaType.TEXT_HTML_VALUE)
+//	@ResponseBody
+//	public String sendTransaction(Model model, @ModelAttribute("transaction") Transaction transaction, @PathVariable int id) {
+//		if (peopleService.findOne(id).isPresent()) {
+//			transaction.setReceivingAccount(12345678);
+//			transaction.setReceivingBank(1);
+//			transaction.setAmount(peopleService.findOne(id).get().getFine());
+//			transaction.setCurrency(Currency.BYN);
+//			Logger.getGlobal().info(transaction.toString());
+//			RestClient restClient = RestClient.create("http://localhost:7070/api/transaction/pay");
+//			String result = restClient.post().contentType(MediaType.APPLICATION_JSON).body(transaction).retrieve().body(String.class);
+//			Logger.getGlobal().info(result);
+//			return result;
+//		}
+//		else {
+//			model.addAttribute("id", id);
+//			return "people/incorrect_id";
+//		}
+//	}
 }
