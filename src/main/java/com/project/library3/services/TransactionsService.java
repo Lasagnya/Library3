@@ -32,7 +32,7 @@ public class TransactionsService {
 
 	public void update(int id, Transaction updatedTransaction) {
 		findOne(id).ifPresent(transactionToBeUpdated -> {
-			updatedTransaction.setInvoice_id(id);
+			updatedTransaction.setInvoiceId(id);
 			updatedTransaction.setDebtor(transactionToBeUpdated.getDebtor());
 			transactionsRepository.save(updatedTransaction);
 		});

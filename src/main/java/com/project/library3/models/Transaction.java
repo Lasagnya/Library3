@@ -23,7 +23,7 @@ public class Transaction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private int invoice_id;
+	private int invoiceId;
 
 	@JsonIgnore
 	@JoinColumn(name = "debtor", referencedColumnName = "id")
@@ -59,15 +59,6 @@ public class Transaction {
 	@Transient
 	@JsonInclude
 	private String callbackUri = "http://localhost:8080/transaction/callback";
-
-	public Transaction(int receivingBank, int sendingAccount, int receivingAccount, double amount, Currency currency, TransactionStatus status) {
-		this.receivingBank = receivingBank;
-		this.sendingAccount = sendingAccount;
-		this.receivingAccount = receivingAccount;
-		this.amount = amount;
-		this.currency = currency;
-		this.status = status;
-	}
 
 	public Transaction(Person debtor) {
 		this.debtor = debtor;

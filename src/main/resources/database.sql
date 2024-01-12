@@ -23,5 +23,5 @@ create table transaction (
     receiving_account integer,
     amount numeric(15, 2),
     transaction_currency char(3) not null,
-    transaction_status varchar(9) default 'PENDING'
+    transaction_status varchar(9) default 'NEW'
 );
