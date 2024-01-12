@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Table(name = "person")
+@ToString
 public class Person {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,14 +73,5 @@ public class Person {
 
 	public void setBooks(List<Book> books) {
 		this.books = books;
-	}
-
-	@Override
-	public String toString() {
-		return "Person{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", birth=" + birth +
-				'}';
 	}
 }

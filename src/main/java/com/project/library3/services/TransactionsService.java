@@ -1,6 +1,9 @@
 package com.project.library3.services;
 
+import com.project.library3.models.Currency;
+import com.project.library3.models.Person;
 import com.project.library3.models.Transaction;
+import com.project.library3.models.TransactionStatus;
 import com.project.library3.repositories.TransactionsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,5 +44,14 @@ public class TransactionsService {
 
 	public void delete(int id) {
 		transactionsRepository.deleteById(id);
+	}
+
+	public Transaction fillAndSave(Transaction transaction, Person debtor) {
+		transaction.setReceivingAccount(12345678);
+		transaction.setReceivingBank(1);
+		transaction.setAmount(debtor.getFine());
+		transaction.setCurrency(Currency.BYN);
+		transaction.setStatus(TransactionStatus.PENDING);
+		return save(transaction);
 	}
 }

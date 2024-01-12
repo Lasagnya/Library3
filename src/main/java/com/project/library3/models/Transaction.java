@@ -48,9 +48,11 @@ public class Transaction {
 
 	/** поле валюта транзации */
 	@Column(name = "transaction_currency")
+	@Enumerated(EnumType.STRING)
 	private Currency currency;
 
 	@Column(name = "transaction_status")
+	@Enumerated(EnumType.STRING)
 	@JsonIgnore
 	private TransactionStatus status;
 

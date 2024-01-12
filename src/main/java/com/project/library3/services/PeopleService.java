@@ -59,4 +59,10 @@ public class PeopleService {
 		}
 		else return Collections.emptyList();
 	}
+
+	public void testNullFine(Person debtor) {}
+
+	public void nullFine(Person debtor) {
+		debtor.setFine(0.0);
+	}
 }
