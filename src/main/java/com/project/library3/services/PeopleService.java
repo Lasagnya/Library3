@@ -60,9 +60,9 @@ public class PeopleService {
 		else return Collections.emptyList();
 	}
 
-	public void testNullFine(Person debtor) {}
+	public void testWriteOffFine(Person debtor, Double amount) {}
 
-	public void nullFine(Person debtor) {
-		debtor.setFine(0.0);
+	public void writeOffFine(Person debtor, Double amount) {
+		debtor.setFine(debtor.getFine() - amount);
 	}
 }

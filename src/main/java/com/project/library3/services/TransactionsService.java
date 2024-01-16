@@ -15,10 +15,12 @@ import java.util.Optional;
 @Transactional
 public class TransactionsService {
 	private final TransactionsRepository transactionsRepository;
+	private final PeopleService peopleService;
 
 	@Autowired
-	public TransactionsService(TransactionsRepository transactionsRepository) {
+	public TransactionsService(TransactionsRepository transactionsRepository, PeopleService peopleService) {
 		this.transactionsRepository = transactionsRepository;
+		this.peopleService = peopleService;
 	}
 
 	public Transaction save(Transaction transaction) {
@@ -36,10 +38,6 @@ public class TransactionsService {
 			updatedTransaction.setDebtor(transactionToBeUpdated.getDebtor());
 			transactionsRepository.save(updatedTransaction);
 		});
-//		Transaction transactionToBeUpdated = findOne(id).get();
-//		updatedTransaction.setInvoice_id(id);
-//		updatedTransaction.setDebtor(transactionToBeUpdated.getDebtor());
-//		transactionsRepository.save(updatedTransaction);
 	}
 
 	public void delete(int id) {
@@ -53,5 +51,19 @@ public class TransactionsService {
 		transaction.setCurrency(Currency.BYN);
 		transaction.setStatus(TransactionStatus.PENDING);
 		return save(transaction);
+	}
+
+	public void updateStatus(final Transaction updatedTransaction) {
+		switch (updatedTransaction.getStatus()) {
+			case NEW, PENDING -> {}
+
+			case PAID -> {
+				findOne(updatedTransaction.getInvoiceId()).ifPresent(transaction ->
+						peopleService.writeOffFine(transaction.getDebtor(), updatedTransaction.getAmount()));
+				update(updatedTransaction.getInvoiceId(), updatedTransaction);
+			}
+
+			case INVALID, CANCELED, EXPIRED, REFUNDED -> update(updatedTransaction.getInvoiceId(), updatedTransaction);
+		}
 	}
 }

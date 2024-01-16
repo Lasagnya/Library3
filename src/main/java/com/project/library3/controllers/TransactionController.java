@@ -1,11 +1,8 @@
 package com.project.library3.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.library3.models.*;
 import com.project.library3.services.PeopleService;
 import com.project.library3.services.TransactionsService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,12 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -46,7 +38,6 @@ public class TransactionController {
 		if (debtorOptional.isPresent()) {
 			Person debtor = debtorOptional.get();
 			transaction = transactionsService.fillAndSave(transaction, debtor);
-			peopleService.testNullFine(debtor);
 			BankingResponsePage bankingResponsePage = BankingResponsePage.createBankingResponsePage(this::getBankingConnection, transaction);
 			return bankingResponsePage.getHtmlPage();
 		}
@@ -69,7 +60,9 @@ public class TransactionController {
 //			modelAndView.addObject("testAttribute", "qwerty");
 
 	@PostMapping("/callback")
-	public String getResult(@RequestBody Transaction transaction) {
-		return "";
+	@ResponseStatus(value = HttpStatus.OK)
+	public void getResult(@RequestBody Transaction transaction) {
+		Logger.getGlobal().info(transaction.toString());
+		transactionsService.updateStatus(transaction);
 	}
 }
