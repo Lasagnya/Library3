@@ -6,15 +6,11 @@ import com.project.library3.services.TransactionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
-import java.util.Optional;
 import java.util.logging.Logger;
 
-@Controller
+@RestController
 @RequestMapping("/transaction")
 public class TransactionController {
 	private final PeopleService peopleService;
@@ -26,26 +22,24 @@ public class TransactionController {
 		this.transactionsService = transactionsService;
 	}
 
-	public RestClient.RequestBodySpec getBankingConnection() {
-		RestClient restClient = RestClient.create("http://localhost:7070/api/transaction/pay");
-		return restClient.post().contentType(MediaType.APPLICATION_JSON);
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public CreatingTransactionResult sendTransaction(@RequestBody Transaction transaction) {
+		return transactionsService.createTransaction(transaction);
 	}
-
-	@PostMapping(produces = MediaType.TEXT_HTML_VALUE)
-	@ResponseBody
-	public String sendTransaction(Model model, @ModelAttribute("transaction") Transaction transaction) {
-		Optional<Person> debtorOptional = peopleService.findOne(transaction.getDebtor().getId());
-		if (debtorOptional.isPresent()) {
-			Person debtor = debtorOptional.get();
-			transaction = transactionsService.fillAndSave(transaction, debtor);
-			BankingResponsePage bankingResponsePage = BankingResponsePage.createBankingResponsePage(this::getBankingConnection, transaction);
-			return bankingResponsePage.getHtmlPage();
-		}
-		else {
-			model.addAttribute("id", transaction.getDebtor());
-			return "people/incorrect_id";
-		}
-	}
+//	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+//	public String sendTransaction(Model model, @ModelAttribute("transaction") Transaction transaction) {
+//		Optional<Person> debtorOptional = peopleService.findOne(transaction.getDebtor().getId());
+//		if (debtorOptional.isPresent()) {
+//			Person debtor = debtorOptional.get();
+//			transaction = transactionsService.fillAndSave(transaction, debtor);
+//			BankingResponsePage bankingResponsePage = BankingResponsePage.createBankingResponsePage(this::getBankingConnection, transaction);
+//			return bankingResponsePage.getHtmlPage();
+//		}
+//		else {
+//			model.addAttribute("id", transaction.getDebtor());
+//			return "people/incorrect_id";
+//		}
+//	}
 	//			Работает, пересылает post, но изменить тело запроса невозможно
 //			request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
 //			ModelAndView modelAndView = new ModelAndView();
@@ -62,7 +56,6 @@ public class TransactionController {
 	@PostMapping("/callback")
 	@ResponseStatus(value = HttpStatus.OK)
 	public void getResult(@RequestBody Transaction transaction) {
-		Logger.getGlobal().info(transaction.toString());
 		transactionsService.updateStatus(transaction);
 	}
 }

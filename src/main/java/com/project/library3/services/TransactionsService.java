@@ -1,10 +1,8 @@
 package com.project.library3.services;
 
-import com.project.library3.models.Currency;
-import com.project.library3.models.Person;
-import com.project.library3.models.Transaction;
-import com.project.library3.models.TransactionStatus;
+import com.project.library3.models.*;
 import com.project.library3.repositories.TransactionsRepository;
+import com.project.library3.util.TransactionsClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +14,13 @@ import java.util.Optional;
 public class TransactionsService {
 	private final TransactionsRepository transactionsRepository;
 	private final PeopleService peopleService;
+	private final TransactionsClient transactionsClient;
 
 	@Autowired
-	public TransactionsService(TransactionsRepository transactionsRepository, PeopleService peopleService) {
+	public TransactionsService(TransactionsRepository transactionsRepository, PeopleService peopleService, TransactionsClient transactionsClient) {
 		this.transactionsRepository = transactionsRepository;
 		this.peopleService = peopleService;
+		this.transactionsClient = transactionsClient;
 	}
 
 	public Transaction save(Transaction transaction) {
@@ -64,6 +64,18 @@ public class TransactionsService {
 			}
 
 			case INVALID, CANCELED, EXPIRED, REFUNDED -> update(updatedTransaction.getInvoiceId(), updatedTransaction);
+		}
+	}
+
+	public CreatingTransactionResult createTransaction(Transaction transaction) {
+		Optional<Person> debtorOptional = peopleService.findOne(transaction.getDebtor().getId());
+		if (debtorOptional.isPresent()) {
+			Person debtor = debtorOptional.get();
+			transaction = fillAndSave(transaction, debtor);
+			return transactionsClient.createTransaction(transaction);
+		}
+		else {
+			return new CreatingTransactionResult(new ApiError(0));
 		}
 	}
 }
