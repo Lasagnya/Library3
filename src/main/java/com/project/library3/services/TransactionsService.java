@@ -72,10 +72,14 @@ public class TransactionsService {
 		if (debtorOptional.isPresent()) {
 			Person debtor = debtorOptional.get();
 			transaction = fillAndSave(transaction, debtor);
-			return transactionsClient.createTransaction(transaction);
+			Transaction callback = transactionsClient.createTransaction(transaction);
+			CreatingTransactionResult result = new CreatingTransactionResult(callback, new ApiError(0));
+			if (callback.getStatus() == TransactionStatus.INVALID)
+				result.setApiError(new ApiError(2));
+			return result;
 		}
 		else {
-			return new CreatingTransactionResult(new ApiError(0));
+			return new CreatingTransactionResult(transaction, new ApiError(1));
 		}
 	}
 }

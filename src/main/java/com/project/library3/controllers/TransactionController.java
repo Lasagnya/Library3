@@ -1,24 +1,19 @@
 package com.project.library3.controllers;
 
 import com.project.library3.models.*;
-import com.project.library3.services.PeopleService;
 import com.project.library3.services.TransactionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.logging.Logger;
-
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
-	private final PeopleService peopleService;
 	private final TransactionsService transactionsService;
 
 	@Autowired
-	public TransactionController(PeopleService peopleService, TransactionsService transactionsService) {
-		this.peopleService = peopleService;
+	public TransactionController(TransactionsService transactionsService) {
 		this.transactionsService = transactionsService;
 	}
 

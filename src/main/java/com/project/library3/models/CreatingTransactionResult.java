@@ -1,5 +1,6 @@
 package com.project.library3.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,15 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class CreatingTransactionResult {
-	private int id;
+	private Transaction transaction;
 	private ApiError apiError;
-
-	public CreatingTransactionResult(int id) {
-		this.id = id;
-	}
-
-	public CreatingTransactionResult(ApiError apiError) {
-		this.apiError = apiError;
-	}
 }

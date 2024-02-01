@@ -1,6 +1,5 @@
 package com.project.library3.util;
 
-import com.project.library3.models.Book;
 import com.project.library3.models.Person;
 import com.project.library3.services.PeopleService;
 import org.springframework.core.env.Environment;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 @Service
 public class Schedulers {
