@@ -21,20 +21,6 @@ public class TransactionController {
 	public CreatingTransactionResult sendTransaction(@RequestBody Transaction transaction) {
 		return transactionsService.createTransaction(transaction);
 	}
-//	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-//	public String sendTransaction(Model model, @ModelAttribute("transaction") Transaction transaction) {
-//		Optional<Person> debtorOptional = peopleService.findOne(transaction.getDebtor().getId());
-//		if (debtorOptional.isPresent()) {
-//			Person debtor = debtorOptional.get();
-//			transaction = transactionsService.fillAndSave(transaction, debtor);
-//			BankingResponsePage bankingResponsePage = BankingResponsePage.createBankingResponsePage(this::getBankingConnection, transaction);
-//			return bankingResponsePage.getHtmlPage();
-//		}
-//		else {
-//			model.addAttribute("id", transaction.getDebtor());
-//			return "people/incorrect_id";
-//		}
-//	}
 	//			Работает, пересылает post, но изменить тело запроса невозможно
 //			request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
 //			ModelAndView modelAndView = new ModelAndView();
