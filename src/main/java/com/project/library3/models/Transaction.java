@@ -3,10 +3,7 @@ package com.project.library3.models;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.library3.services.Views;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  *  Класс транзакций
@@ -15,6 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Entity
 @Table(name = "transaction")

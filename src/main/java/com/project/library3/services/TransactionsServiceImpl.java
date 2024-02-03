@@ -81,8 +81,11 @@ public class TransactionsServiceImpl implements TransactionsService {
 			transaction = fillAndSave(transaction, debtor);
 			Transaction callback = transactionsClient.createTransaction(transaction);
 			CreatingTransactionResult result = new CreatingTransactionResult(callback, new ApiError(0));
-			if (callback.getStatus() == TransactionStatus.INVALID)
+			if (callback.getStatus() == TransactionStatus.INVALID) {
+				transaction.setStatus(TransactionStatus.INVALID);
+				updateStatus(transaction);
 				result.setApiError(new ApiError(2));
+			}
 			return result;
 		}
 		else {
