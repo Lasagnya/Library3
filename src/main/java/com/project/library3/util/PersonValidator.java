@@ -1,19 +1,19 @@
 package com.project.library3.util;
 
+import com.project.library3.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import com.project.library3.models.Person;
-import com.project.library3.services.PeopleService;
+import com.project.library3.domain.Person;
 
 @Component
 public class PersonValidator implements Validator {
-	private final PeopleService peopleService;
+	private final PersonService personService;
 
 	@Autowired
-	public PersonValidator(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public PersonValidator(PersonService personService) {
+		this.personService = personService;
 	}
 
 	@Override
@@ -24,8 +24,8 @@ public class PersonValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		Person person = (Person) target;
-		if (peopleService.findOne(person.getName()).isPresent())
-			if (peopleService.findOne(person.getName()).get().getId() != person.getId())
+		if (personService.findOne(person.getName()).isPresent())
+			if (personService.findOne(person.getName()).get().getId() != person.getId())
 				errors.rejectValue("name", "", "This name is already taken.");
 	}
 }

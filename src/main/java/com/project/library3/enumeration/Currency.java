@@ -1,4 +1,4 @@
-package com.project.library3.models;
+package com.project.library3.enumeration;
 
 /**
  *  Варианты валют

@@ -1,4 +1,4 @@
-package com.project.library3.util;
+package com.project.library3.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;

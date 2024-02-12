@@ -1,8 +1,16 @@
-package com.project.library3.services;
+package com.project.library3.service.implementation;
 
-import com.project.library3.models.*;
-import com.project.library3.repositories.TransactionsRepository;
-import com.project.library3.util.TransactionsClient;
+import com.project.library3.to.front.ApiError;
+import com.project.library3.to.front.CreatingTransactionResult;
+import com.project.library3.domain.Person;
+import com.project.library3.domain.Transaction;
+import com.project.library3.enumeration.Currency;
+import com.project.library3.enumeration.TransactionStatus;
+import com.project.library3.repository.TransactionRepository;
+import com.project.library3.service.PersonService;
+import com.project.library3.service.TransactionService;
+import com.project.library3.client.TransactionClient;
+import com.project.library3.to.banking.BankingTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,27 +19,27 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class TransactionsServiceImpl implements TransactionsService {
-	private final TransactionsRepository transactionsRepository;
-	private final PeopleService peopleService;
-	private final TransactionsClient transactionsClient;
+public class TransactionServiceImpl implements TransactionService {
+	private final TransactionRepository transactionRepository;
+	private final PersonService personService;
+	private final TransactionClient transactionClient;
 
 	@Autowired
-	public TransactionsServiceImpl(TransactionsRepository transactionsRepository, PeopleService peopleService, TransactionsClient transactionsClient) {
-		this.transactionsRepository = transactionsRepository;
-		this.peopleService = peopleService;
-		this.transactionsClient = transactionsClient;
+	public TransactionServiceImpl(TransactionRepository transactionRepository, PersonService personService, TransactionClient transactionClient) {
+		this.transactionRepository = transactionRepository;
+		this.personService = personService;
+		this.transactionClient = transactionClient;
 	}
 
 	@Override
 	public Transaction save(Transaction transaction) {
-		return transactionsRepository.save(transaction);
+		return transactionRepository.save(transaction);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Optional<Transaction> findOne(int id) {
-		return transactionsRepository.findById(id);
+		return transactionRepository.findById(id);
 	}
 
 	@Override
@@ -39,13 +47,13 @@ public class TransactionsServiceImpl implements TransactionsService {
 		findOne(id).ifPresent(transactionToBeUpdated -> {
 			updatedTransaction.setInvoiceId(id);
 			updatedTransaction.setDebtor(transactionToBeUpdated.getDebtor());
-			transactionsRepository.save(updatedTransaction);
+			transactionRepository.save(updatedTransaction);
 		});
 	}
 
 	@Override
 	public void delete(int id) {
-		transactionsRepository.deleteById(id);
+		transactionRepository.deleteById(id);
 	}
 
 	@Override
@@ -65,7 +73,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 
 			case PAID -> {
 				findOne(updatedTransaction.getInvoiceId()).ifPresent(transaction ->
-						peopleService.writeOffFine(transaction.getDebtor(), updatedTransaction.getAmount()));
+						personService.writeOffFine(transaction.getDebtor(), updatedTransaction.getAmount()));
 				update(updatedTransaction.getInvoiceId(), updatedTransaction);
 			}
 
@@ -75,12 +83,12 @@ public class TransactionsServiceImpl implements TransactionsService {
 
 	@Override
 	public CreatingTransactionResult createTransaction(Transaction transaction) {
-		Optional<Person> debtorOptional = peopleService.findOne(transaction.getDebtor().getId());
+		Optional<Person> debtorOptional = personService.findOne(transaction.getDebtor().getId());
 		if (debtorOptional.isPresent()) {
 			Person debtor = debtorOptional.get();
 			transaction = fillAndSave(transaction, debtor);
-			Transaction callback = transactionsClient.createTransaction(transaction);
-			CreatingTransactionResult result = new CreatingTransactionResult(callback, new ApiError(0));
+			Transaction callback = transactionClient.createTransaction(transaction);
+			CreatingTransactionResult result = new CreatingTransactionResult(new BankingTransaction(callback), new ApiError(0));
 			if (callback.getStatus() == TransactionStatus.INVALID) {
 				transaction.setStatus(TransactionStatus.INVALID);
 				updateStatus(transaction);
@@ -89,7 +97,7 @@ public class TransactionsServiceImpl implements TransactionsService {
 			return result;
 		}
 		else {
-			return new CreatingTransactionResult(transaction, new ApiError(1));
+			return new CreatingTransactionResult(new BankingTransaction(transaction), new ApiError(1));
 		}
 	}
 }

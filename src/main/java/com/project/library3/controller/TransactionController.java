@@ -1,7 +1,8 @@
-package com.project.library3.controllers;
+package com.project.library3.controller;
 
-import com.project.library3.models.*;
-import com.project.library3.services.TransactionsService;
+import com.project.library3.to.front.CreatingTransactionResult;
+import com.project.library3.domain.Transaction;
+import com.project.library3.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,16 +11,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
-	private final TransactionsService transactionsService;
+	private final TransactionService transactionService;
 
 	@Autowired
-	public TransactionController(TransactionsService transactionsService) {
-		this.transactionsService = transactionsService;
+	public TransactionController(TransactionService transactionService) {
+		this.transactionService = transactionService;
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public CreatingTransactionResult sendTransaction(@RequestBody Transaction transaction) {
-		return transactionsService.createTransaction(transaction);
+		return transactionService.createTransaction(transaction);
 	}
 	//			Работает, пересылает post, но изменить тело запроса невозможно
 //			request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
@@ -37,6 +38,6 @@ public class TransactionController {
 	@PostMapping("/callback")
 	@ResponseStatus(value = HttpStatus.OK)
 	public void getResult(@RequestBody Transaction transaction) {
-		transactionsService.updateStatus(transaction);
+		transactionService.updateStatus(transaction);
 	}
 }

@@ -1,12 +1,12 @@
-package com.project.library3.services;
+package com.project.library3.service;
 
-import com.project.library3.models.Book;
-import com.project.library3.models.Person;
+import com.project.library3.domain.Book;
+import com.project.library3.domain.Person;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PeopleService {
+public interface PersonService {
 	List<Person> findAll();
 	Optional<Person> findOne(int id);
 	Optional<Person> findOne(String name);

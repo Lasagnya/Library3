@@ -1,4 +1,4 @@
-package com.project.library3.models;
+package com.project.library3.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.logging.Logger;
 
 @Entity
 @Table(name = "book")

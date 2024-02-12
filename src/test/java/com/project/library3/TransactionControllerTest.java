@@ -1,18 +1,18 @@
 package com.project.library3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.library3.controllers.TransactionController;
-import com.project.library3.models.Currency;
-import com.project.library3.models.Person;
-import com.project.library3.models.Transaction;
-import com.project.library3.models.TransactionStatus;
-import com.project.library3.repositories.PeopleRepository;
-import com.project.library3.repositories.TransactionsRepository;
-import com.project.library3.services.PeopleService;
-import com.project.library3.services.PeopleServiceImpl;
-import com.project.library3.services.TransactionsService;
-import com.project.library3.services.TransactionsServiceImpl;
-import com.project.library3.util.TransactionsClient;
+import com.project.library3.controller.TransactionController;
+import com.project.library3.enumeration.Currency;
+import com.project.library3.domain.Person;
+import com.project.library3.domain.Transaction;
+import com.project.library3.enumeration.TransactionStatus;
+import com.project.library3.repository.PersonRepository;
+import com.project.library3.repository.TransactionRepository;
+import com.project.library3.service.*;
+import com.project.library3.service.implementation.PersonServiceImpl;
+import com.project.library3.service.PersonService;
+import com.project.library3.service.implementation.TransactionServiceImpl;
+import com.project.library3.client.TransactionClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,30 +42,30 @@ public class TransactionControllerTest {
 	@Autowired
 	private ObjectMapper mapper;
 
-	@SpyBean(TransactionsServiceImpl.class)
-	private TransactionsService transactionsService;
+	@SpyBean(TransactionServiceImpl.class)
+	private TransactionService transactionService;
 
-	@SpyBean(PeopleServiceImpl.class)
-	private PeopleService peopleService;
-
-	@MockBean
-	private TransactionsClient transactionsClient;
+	@SpyBean(PersonServiceImpl.class)
+	private PersonService personService;
 
 	@MockBean
-	private TransactionsRepository transactionsRepository;
+	private TransactionClient transactionClient;
 
 	@MockBean
-	private PeopleRepository peopleRepository;
+	private TransactionRepository transactionRepository;
+
+	@MockBean
+	private PersonRepository personRepository;
 
 	private final Person debtor = new Person(3, "", 0, 100.0, null);
 
-	private final Transaction transaction = new Transaction(0, debtor, 1234, 12345678, 1, debtor.getFine(), Currency.BYN, TransactionStatus.PENDING, "");
+	private final Transaction transaction = new Transaction(9, debtor, 1234, 12345678, 1, debtor.getFine(), Currency.BYN, TransactionStatus.PENDING, "");
 
 	@Test
 	public void sendTransaction_succeed() throws Exception {
-		Mockito.when(peopleRepository.findById(3)).thenReturn(Optional.of(debtor));
-		Mockito.when(transactionsRepository.save(transaction)).thenReturn(transaction);
-		Mockito.when(transactionsClient.createTransaction(any())).thenReturn(transaction);
+		Mockito.when(personRepository.findById(3)).thenReturn(Optional.of(debtor));
+		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
+		Mockito.when(transactionClient.createTransaction(any())).thenReturn(transaction);
 		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
 				.post("/transaction")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +74,7 @@ public class TransactionControllerTest {
 		mockMvc.perform(mockRequest)
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.apiError.errorId", is(0)))
-				.andExpect(jsonPath("$.transaction.debtor.id", is(transaction.getDebtor().getId())))
+				.andExpect(jsonPath("$.transaction.invoiceId", is(transaction.getInvoiceId())))
 				.andExpect(jsonPath("$.transaction.status", is(TransactionStatus.PENDING.toString())))
 				.andExpect(jsonPath("$.transaction.amount", is(transaction.getAmount())))
 				.andDo(print());
@@ -82,7 +82,7 @@ public class TransactionControllerTest {
 
 	@Test
 	public void sendTransaction_incorrectDebtor() throws Exception {
-		Mockito.when(peopleRepository.findById(3)).thenReturn(Optional.empty());
+		Mockito.when(personRepository.findById(3)).thenReturn(Optional.empty());
 		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
 				.post("/transaction")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -98,9 +98,9 @@ public class TransactionControllerTest {
 	@Test
 	public void sendTransaction_incorrectAccount() throws Exception {
 		Transaction callback = new Transaction(0, null, 1234, 12345678, 1, debtor.getFine(), Currency.BYN, TransactionStatus.INVALID, "");
-		Mockito.when(peopleRepository.findById(3)).thenReturn(Optional.of(debtor));
-		Mockito.when(transactionsRepository.save(any())).thenReturn(transaction);
-		Mockito.when(transactionsClient.createTransaction(any())).thenReturn(callback);
+		Mockito.when(personRepository.findById(3)).thenReturn(Optional.of(debtor));
+		Mockito.when(transactionRepository.save(any())).thenReturn(transaction);
+		Mockito.when(transactionClient.createTransaction(any())).thenReturn(callback);
 		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
 				.post("/transaction")
 				.contentType(MediaType.APPLICATION_JSON)
