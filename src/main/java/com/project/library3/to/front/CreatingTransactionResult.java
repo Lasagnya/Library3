@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.server.ResponseStatusException;
 
 @Getter
 @Setter
@@ -12,5 +13,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreatingTransactionResult {
 	private BankingTransaction transaction;
-	private ApiError apiError;
+	private ResponseStatusException exception;
 }

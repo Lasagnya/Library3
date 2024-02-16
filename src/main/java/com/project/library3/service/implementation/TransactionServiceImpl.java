@@ -1,6 +1,7 @@
 package com.project.library3.service.implementation;
 
-import com.project.library3.to.front.ApiError;
+import com.project.library3.exception.BankingException;
+import com.project.library3.exception.DebtorException;
 import com.project.library3.to.front.CreatingTransactionResult;
 import com.project.library3.domain.Person;
 import com.project.library3.domain.Transaction;
@@ -12,8 +13,11 @@ import com.project.library3.service.TransactionService;
 import com.project.library3.client.TransactionClient;
 import com.project.library3.to.banking.BankingTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -82,22 +86,23 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public CreatingTransactionResult createTransaction(Transaction transaction) {
+	public ResponseEntity<?> createTransaction(Transaction transaction) throws ResponseStatusException {
 		Optional<Person> debtorOptional = personService.findOne(transaction.getDebtor().getId());
 		if (debtorOptional.isPresent()) {
 			Person debtor = debtorOptional.get();
 			transaction = fillAndSave(transaction, debtor);
 			Transaction callback = transactionClient.createTransaction(transaction);
-			CreatingTransactionResult result = new CreatingTransactionResult(new BankingTransaction(callback), new ApiError(0));
 			if (callback.getStatus() == TransactionStatus.INVALID) {
 				transaction.setStatus(TransactionStatus.INVALID);
 				updateStatus(transaction);
-				result.setApiError(new ApiError(2));
+				CreatingTransactionResult result = new CreatingTransactionResult(new BankingTransaction(callback), new BankingException());
+				return new ResponseEntity<>(result, result.getException().getStatusCode());
+//				throw new BankingException();
 			}
-			return result;
+			return new ResponseEntity<>(new BankingTransaction(callback), HttpStatus.OK);
 		}
 		else {
-			return new CreatingTransactionResult(new BankingTransaction(transaction), new ApiError(1));
+			throw new DebtorException();
 		}
 	}
 }

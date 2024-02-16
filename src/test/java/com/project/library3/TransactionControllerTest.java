@@ -73,10 +73,9 @@ public class TransactionControllerTest {
 				.content(mapper.writeValueAsString(transaction));
 		mockMvc.perform(mockRequest)
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.apiError.errorId", is(0)))
-				.andExpect(jsonPath("$.transaction.invoiceId", is(transaction.getInvoiceId())))
-				.andExpect(jsonPath("$.transaction.status", is(TransactionStatus.PENDING.toString())))
-				.andExpect(jsonPath("$.transaction.amount", is(transaction.getAmount())))
+				.andExpect(jsonPath("$.invoiceId", is(transaction.getInvoiceId())))
+				.andExpect(jsonPath("$.status", is(TransactionStatus.PENDING.toString())))
+				.andExpect(jsonPath("$.amount", is(transaction.getAmount())))
 				.andDo(print());
 	}
 
@@ -89,9 +88,7 @@ public class TransactionControllerTest {
 				.accept(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(transaction));
 		mockMvc.perform(mockRequest)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.apiError.errorId", is(1)))
-				.andExpect(jsonPath("$.transaction.amount", is(transaction.getAmount())))
+				.andExpect(status().isConflict())
 				.andDo(print());
 	}
 
@@ -107,8 +104,7 @@ public class TransactionControllerTest {
 				.accept(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(transaction));
 		mockMvc.perform(mockRequest)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.apiError.errorId", is(2)))
+				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.transaction.status", is(TransactionStatus.INVALID.toString())))
 				.andExpect(jsonPath("$.transaction.amount", is(transaction.getAmount())))
 				.andDo(print());

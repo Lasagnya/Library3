@@ -1,12 +1,13 @@
 package com.project.library3.controller;
 
-import com.project.library3.to.front.CreatingTransactionResult;
 import com.project.library3.domain.Transaction;
 import com.project.library3.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/transaction")
@@ -19,7 +20,7 @@ public class TransactionController {
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public CreatingTransactionResult sendTransaction(@RequestBody Transaction transaction) {
+	public ResponseEntity<?> sendTransaction(@RequestBody Transaction transaction) throws ResponseStatusException {
 		return transactionService.createTransaction(transaction);
 	}
 	//			Работает, пересылает post, но изменить тело запроса невозможно
